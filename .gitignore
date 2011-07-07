@@ -1,0 +1,14 @@
+# garbage
+*.log
+*.pyc
+*.pyc
+*.swo
+*.swp
+*.swn
+*.gpg
+*~
+\#*
+tmp
+pip-log.txt
+build
+.sass-cache
