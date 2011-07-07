@@ -16,11 +16,24 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from flaskext.sqlalchemy import SQLAlchemy
+from candice import app
 
-from flask import Flask
 
-app = Flask(__name__)
-app.config.from_envvar('CANDICE_SETTINGS')
+db = SQLAlchemy(app)
 
-import candice.views
+
+class Candidate(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    slug = db.Column(db.Unicode(127), unique=True)
+    name = db.Column(db.Unicode(127))
+    email = db.Column(db.Unicode(127), unique=True)
+    website = db.Column(db.Unicode(255), unique=True)
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+    def __repr__(self):
+        return '<%s.%s %s>' % (self.__class__.__module__,
+                               self.__class__.__name__, unicode(self))
 

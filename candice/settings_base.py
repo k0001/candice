@@ -17,10 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from flask import Flask
+DEBUG = False
 
-app = Flask(__name__)
-app.config.from_envvar('CANDICE_SETTINGS')
-
-import candice.views
+SQLALCHEMY_DATABASE_URI  = 'postgresql://<user>:<password>@<host>/<dbname>'
+SQLALCHEMY_ECHO = False
 

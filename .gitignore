@@ -12,3 +12,6 @@ tmp
 pip-log.txt
 build
 .sass-cache
+
+candice/settings_*.py
+!candice/settings_base.py
