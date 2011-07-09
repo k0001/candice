@@ -19,21 +19,57 @@
 from flaskext.sqlalchemy import SQLAlchemy
 from candice import app
 
+__all__ = 'db', 'Candidate', 'Party', 'Charge'
+
 
 db = SQLAlchemy(app)
 
 
-class Candidate(db.Model):
+class _AddReprMixin(object):
+    def __repr__(self):
+        s = u'<%s.%s %s>' % (self.__class__.__module__,
+                             self.__class__.__name__, unicode(self))
+        return s.encode('utf-8')
+
+
+class Candidate(db.Model, _AddReprMixin):
+    __tableame__ = 'candidate'
     id = db.Column(db.Integer, primary_key=True)
-    slug = db.Column(db.Unicode(127), unique=True)
-    name = db.Column(db.Unicode(127))
-    email = db.Column(db.Unicode(127), unique=True)
-    website = db.Column(db.Unicode(255), unique=True)
+    slug = db.Column(db.Unicode(127), unique=True, nullable=False)
+    name = db.Column(db.Unicode(127), nullable=False)
+    email = db.Column(db.Unicode(127), nullable=False, default=u'')
+    website = db.Column(db.Unicode(255), nullable=False, default=u'')
+    party_id = db.Column(db.Integer, db.ForeignKey('party.id'), nullable=False)
+    charge_id = db.Column(db.Integer, db.ForeignKey('charge.id'), nullable=False)
 
     def __unicode__(self):
         return unicode(self.name)
 
-    def __repr__(self):
-        return '<%s.%s %s>' % (self.__class__.__module__,
-                               self.__class__.__name__, unicode(self))
+
+class Party(db.Model, _AddReprMixin):
+    __tableame__ = 'party'
+    id = db.Column(db.Integer, primary_key=True)
+    slug = db.Column(db.Unicode(127), unique=True, nullable=False)
+    name = db.Column(db.Unicode(127), nullable=False)
+    acronym = db.Column(db.Unicode(127), nullable=False, default=u'')
+    website = db.Column(db.Unicode(255), nullable=False, default=u'')
+    candidates = db.relationship('Candidate', lazy='dynamic', backref='party')
+
+    def __unicode__(self):
+        if self.acronym:
+            return u'%s (%s)' % (self.name, self.acronym)
+        return unicode(self.name)
+
+
+class Charge(db.Model, _AddReprMixin):
+    __tablename__ = 'charge'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Unicode(127), unique=True, nullable=False)
+    province = db.Column(db.Unicode(127))
+    department = db.Column(db.Unicode(127))
+    locality = db.Column(db.Unicode(127))
+    candidate = db.relationship('Candidate', lazy='dynamic', backref='charge')
+
+    def __unicode__(self):
+        return unicode(self.name)
 
